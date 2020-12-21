@@ -12,7 +12,8 @@ class Database:
                     CREATE TABLE IF NOT EXISTS members(
                     user_id TEXT,
                     user_mail TEXT,
-                    user_code TEXT
+                    user_code TEXT,
+                    is_user_on_server INTEGER
                     )
                 """)
 
