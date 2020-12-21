@@ -1,25 +1,27 @@
 """Main file to start the whole bot."""
-
+import logging
 import discord
-from discord.ext import commands
+from client.client import BotClient
+
+# Set up logging
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
+
+
+def get_token():
+    """Get a token from a local file."""
+    try:
+        with open("tkn") as f:
+            lines = f.readlines()
+            return lines[0]
+    except IOError:
+        logger.log("Token file not found.")
+    return "token"
+
 
 intents = discord.Intents(messages=True, guilds=True, reactions=True, members=True, presences=True)
-client = commands.Bot(command_prefix=".", intents=intents)
-
-
-@client.event
-async def on_ready():
-    print("Bot is ready")
-
-
-@client.event
-async def on_member_join(member):
-    print(f"{member} has joined the server!")
-
-
-@client.event
-async def on_member_remove(member):
-    print(f"{member} has left the server!")
-
-
-client.run("NzkwNDU1MjgyNjgwODU2NTk4.X-A22Q.wFy3IO7TTOE_fm1h10kkzTpRaVU")
+client = BotClient(command_prefix=".", intents=intents)
+client.run(get_token())
