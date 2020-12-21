@@ -2,11 +2,14 @@
 
 import discord
 
+from db.database import Database
+
 
 class BotClient(discord.Client):
     """Bot client."""
 
     async def on_ready(self):
+        db = Database()
         print("Bot is ready")
 
     async def on_member_join(self, member):

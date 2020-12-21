@@ -1,2 +1,3 @@
 /main/tkn
 /main/discord.log
+*.sqlite
