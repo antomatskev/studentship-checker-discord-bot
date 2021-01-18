@@ -5,11 +5,13 @@ A discord bot, which will check if a person is a student, then assign correspond
 Don't let any unwanted people post to a discord server until they confirm that they belong to a school/college/university this server is meant for. We assume, that such institution has own e-mails, so it's ensured, that a person is officially registered.
 
 ## What we do
-After a member joins a discord server, our bot does the following:
+After a person joins a discord server, our bot does the following:
 
-- Assigns a role, which doesn't allow to do anything on the server;
-- Writes a private message to a member asking for an e-mail to send confirmation code;
-- Sends a code to the entered e-mail and waits for a member to enter this code to the same private chat;
+- Assigns a role to that person, which doesn't allow doing anything on the server;
+- Writes a private message to the joined person asking for an e-mail to send confirmation code;
+- Sends a code to the entered e-mail and waits for a person to enter this code to the same private chat;
+
+For sending e-mails we use https://github.com/kootenpv/yagmail
 
 ## Additional functionality
 Also we may add:
