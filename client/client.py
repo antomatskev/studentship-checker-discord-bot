@@ -3,7 +3,7 @@ import random
 
 import discord
 
-from database import Database
+from db.database import Database
 
 
 class BotClient(discord.Client):
