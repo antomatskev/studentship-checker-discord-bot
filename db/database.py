@@ -3,6 +3,7 @@ import sqlite3
 import discord
 import yagmail
 
+
 class Database:
     """Class for members database."""
 
@@ -21,7 +22,7 @@ class Database:
                     user_mail TEXT,
                     user_code TEXT,
                     is_user_on_server INTEGER,
-                    is_code_sent TEXT
+                    is_code_sent INTEGER
                     )
                 """)
         self.db.commit()  # Is it need to be here??
@@ -30,8 +31,8 @@ class Database:
         """Add a new member to the database using the discord ID as user_id
         and leave mail and code empty for now."""
         self.cursor.execute(f"""
-        INSERT INTO members(user_id, is_code_sent)
-        VALUES ('{member}', 'False')
+            INSERT INTO members(user_id, is_code_sent)
+            VALUES ('{member}', 0)
         """)
         self.db.commit()
         print(f"===DEBUG: {member}")
@@ -42,11 +43,10 @@ class Database:
         """Update user's mail."""
         print(f"===DEBUG: setting an email {mail} for {user}")
         if self.is_correct_mail(mail):
-            # Update mail in database
             self.cursor.execute(f"""
-            UPDATE members
-            SET user_mail = '{mail}'
-            WHERE user_id = '{user}'
+                UPDATE members
+                SET user_mail = '{mail}'
+                WHERE user_id = '{user}'
             """)
             self.db.commit()
         else:
@@ -57,13 +57,14 @@ class Database:
         """Update user's code for authentication."""
         print(f"===DEBUG: setting a code {code} for {user}")
         self.cursor.execute(f"""
-        UPDATE members
-        SET user_code = '{code}'
-        WHERE user_id = '{user}'
+            UPDATE members
+            SET user_code = '{code}'
+            WHERE user_id = '{user}'
         """)
         self.cursor.execute(f"""
-        SELECT * FROM members
-        WHERE user_id='{user}'""")
+            SELECT * FROM members
+            WHERE user_id='{user}'
+        """)
         data = self.cursor.fetchone()
         usermail = data[1]
         self.send_code_to_mail(usermail, code)
@@ -74,8 +75,8 @@ class Database:
         """Check if the user is already in our table."""
         print(f"===DEBUG: checking if an user {user} is in table")
         self.cursor.execute(f"""
-        SELECT * FROM members WHERE EXISTS 
-        (SELECT user_id FROM members WHERE user_id = '{user}')
+            SELECT * FROM members WHERE EXISTS 
+            (SELECT user_id FROM members WHERE user_id = '{user}')
         """)
         res = self.cursor.fetchone()
         return res
@@ -86,7 +87,7 @@ class Database:
         res = False
         try:
             res = True if len(mail.split("@")[0]) > 0 \
-                        and (mail.split("@")[1] == 'ttu.ee' or mail.split("@")[1] == 'taltech.ee') else False
+                          and (mail.split("@")[1] == 'ttu.ee' or mail.split("@")[1] == 'taltech.ee') else False
         finally:
             pass
         return res
@@ -94,15 +95,16 @@ class Database:
     def code_was_sent(self, user):
         """Updating is_code_sent field in database to 1"""
         self.cursor.execute(f"""
-        UPDATE members SET is_code_sent = 'True' WHERE user_id = '{user}'""")
+            UPDATE members SET is_code_sent = 1 WHERE user_id = '{user}'
+        """)
         self.db.commit()
 
     def is_code_sent(self, user):
         """Make sure the code is sent to user. And change the corresponding value in the table."""
-        # TODO
         self.cursor.execute(f"""
-        SELECT is_code_sent FROM members WHERE user_id = '{user}'""")
-        res = True if self.cursor.fetchone()[0] == 'True' else False
+            SELECT is_code_sent FROM members WHERE user_id = '{user}'
+        """)
+        res = True if self.cursor.fetchone()[0] == 1 else False
         return res
 
     def send_code_to_mail(self, usermail, code):
@@ -125,7 +127,7 @@ class Database:
     def get_code(self, user):
         """Return generated user's code from the table."""
         self.cursor.execute(f"""
-        SELECT user_code FROM members WHERE user_id = '{user}'
+            SELECT user_code FROM members WHERE user_id = '{user}'
         """)
         res = self.cursor.fetchone()[0]
         return res
