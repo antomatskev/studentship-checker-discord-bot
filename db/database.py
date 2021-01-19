@@ -11,7 +11,6 @@ class Database:
         """Database constructor."""
         self.db = sqlite3.connect("main.sqlite")
         self.cursor = self.db.cursor()
-        self._is_code_sent = False
         self.init_table()
 
     def init_table(self):
@@ -67,7 +66,6 @@ class Database:
         data = self.cursor.fetchone()
         usermail = data[1]
         self.send_code_to_mail(usermail, code)
-        self.code_was_sent(user)
         self.db.commit()
 
     def is_user_in_table(self, user):
@@ -100,23 +98,16 @@ class Database:
 
     def send_code_to_mail(self, usermail, code):
         """Send an e-mail with the code."""
-        receiver = usermail
-        # TODO: the text should be in English and more generic and shorter. And we should ask the client to choose it.
-        body = f"""Привет! Судя по всему, Вы пытаетесь стать полноправным учасником сервера TalTech-IT-rus. \
-        Чтобы получить роль и право писать в чате, пришлите код ниже боту, которому Вы дали свою электронную почту:
+        body = f"""Hey! Here is your discord server's code: 
             {code}
-            Не добавляйте в сообщение для бота никаких дополнительных знаков и слов, и пришлите код единым сообщением, \
-            не разделяя его.
-            Если вы не запрашивали подобных писем, просто не обращайте внимания это сообщение."""
-
-        # Only gmail account can be used. Need to provide user(example -> something@gmail.com) and password.
+            Tell it to the Studentship Checker bot."""
+        # Only gmail account can be used. Need to provide user (example -> something@gmail.com) and APP password.
         yag = yagmail.SMTP(user="", password="")
         yag.send(
-            to=receiver,
-            subject="TalTech-IT-rus: Запрос на подтверждение личности для сервера",
+            to=usermail,
+            subject="Studentship Checker code",
             contents=body,
         )
-        self._is_code_sent = True
 
     def get_code(self, user):
         """Return generated user's code from the table."""
