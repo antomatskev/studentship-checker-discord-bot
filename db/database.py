@@ -109,7 +109,7 @@ class Database:
             
         Tell it to the Studentship Checker bot."""
         # Only gmail account can be used. Need to provide user (example -> something@gmail.com) and APP password.
-        yag = yagmail.SMTP(user="antoniomacek@gmail.com", password="hvhkmrwaflglvvju")
+        yag = yagmail.SMTP(user="", password="")
         yag.send(
             to=usermail,
             subject="Studentship Checker code",
