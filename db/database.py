@@ -18,9 +18,9 @@ class Database:
         """Create table if necessary."""
         self.cursor.execute("""
                     CREATE TABLE IF NOT EXISTS members(
-                    user_id TEXT,
-                    user_mail TEXT,
-                    user_code TEXT,
+                    user_id TEXT PRIMARY KEY UNIQUE,
+                    user_mail TEXT UNIQUE,
+                    user_code TEXT UNIQUE,
                     is_user_on_server INTEGER,
                     is_code_sent INTEGER
                     )
