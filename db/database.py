@@ -29,10 +29,14 @@ class Database:
     def add_new_member(self, member: discord.User.id):
         """Add a new member to the database using the discord ID as user_id
         and leave mail and code empty for now."""
-        self.cursor.execute(f"""
-            INSERT INTO members(user_id, is_code_sent)
-            VALUES ('{member}', 0)
-        """)
+        # TODO: we should return boolean to show if adding was successful.
+        try:
+            self.cursor.execute(f"""
+                INSERT INTO members(user_id, is_code_sent)
+                VALUES ('{member}', 0)
+            """)
+        except sqlite3.IntegrityError:
+            print(f"===DEBUG: {member} is already in the DB!")
         self.db.commit()
         print(f"===DEBUG: {member}")
         self.cursor.execute("""SELECT * FROM members""")
@@ -60,12 +64,12 @@ class Database:
             WHERE user_id = '{user}'
         """)
         self.cursor.execute(f"""
-            SELECT * FROM members
+            SELECT user_mail FROM members
             WHERE user_id='{user}'
         """)
-        data = self.cursor.fetchone()
-        usermail = data[1]
-        self.send_code_to_mail(usermail, code)
+        mail = self.cursor.fetchone()[0]
+        print(f"===DEBUG: mail for {user} from DB is {mail}")
+        self.send_code_to_mail(mail, code)
         self.db.commit()
 
     def is_user_in_table(self, user):
@@ -98,11 +102,14 @@ class Database:
 
     def send_code_to_mail(self, usermail, code):
         """Send an e-mail with the code."""
-        body = f"""Hey! Here is your discord server's code: 
+        body = f"""Hey!
+        Here is your discord server's code:
+        
             {code}
-            Tell it to the Studentship Checker bot."""
+            
+        Tell it to the Studentship Checker bot."""
         # Only gmail account can be used. Need to provide user (example -> something@gmail.com) and APP password.
-        yag = yagmail.SMTP(user="", password="")
+        yag = yagmail.SMTP(user="antoniomacek@gmail.com", password="hvhkmrwaflglvvju")
         yag.send(
             to=usermail,
             subject="Studentship Checker code",

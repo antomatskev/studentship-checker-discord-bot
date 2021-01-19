@@ -20,6 +20,7 @@ class BotClient(discord.Client):
     async def on_member_join(self, member):
         print(f"===DEBUG: {member} has joined the server!")
         await member.send("Hey! Enter your school e-mail. I'll send you a confirmation code.")
+        # TODO: switch with sending a message, so we could specify the message to send for already existing users.
         self.db.add_new_member(member)
 
     async def on_member_remove(self, member):
@@ -38,7 +39,7 @@ class BotClient(discord.Client):
                         if self.db.get_code(message.author) == self.clean_message(message.content):
                             await message.author.send("You look like a student. Welcome aboard.")
                             self.accept_user()
-                    if not self.db.update_mail(message.author, message.content):
+                    if not self.db.update_mail(message.author, message.content):  # TODO: FIX: this check comes again after entering the code.
                         await message.author.send("Your e-mail looks incorrect. Try again.")
                     else:
                         code = self.generate_code()
