@@ -82,8 +82,7 @@ class Database:
     def is_correct_mail(self, mail: str):
         """Check if entered e-mail's domain is correct."""
         print(f"===DEBUG: checking if an email {mail} is correct")
-        # TODO: i've seen an exception here (try-except didn't help). Will need to test more or switch to "contains".
-        return len(mail.split("@")[0]) > 0 and (mail.split("@")[1] == 'ttu.ee' or mail.split("@")[1] == 'taltech.ee')
+        return mail.endswith("ttu.ee") or mail.endswith("taltech.ee")
 
     def code_was_sent(self, user):
         """Updating is_code_sent field in database to 1"""
