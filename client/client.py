@@ -19,9 +19,16 @@ class BotClient(discord.Client):
 
     async def on_member_join(self, member):
         print(f"===DEBUG: {member} has joined the server!")
-        await member.send("Hey! Enter your school e-mail. I'll send you a confirmation code.")
-        # TODO: switch with sending a message, so we could specify the message to send for already existing users.
-        self.db.add_new_member(member)
+        res = self.db.add_new_member(member)
+        msg = "None"
+        if res == "User already in table, code received.":
+            msg = "Welcome back! I see you already received the invite code, you can insert it."
+        elif res == "User already in table.":
+            msg = "Welcome back! Enter your school e-mail. I'll send you a confirmation code."
+        else:
+            msg = "Hey! Enter your school e-mail. I'll send you a confirmation code."
+        print(f"===DEBUG: {member} received a message: {msg}")
+        await member.send(msg)
 
     async def on_member_remove(self, member):
         print(f"===DEBUG: {member} has left the server!")
@@ -35,13 +42,15 @@ class BotClient(discord.Client):
                 print(f"===DEBUG: Message content: {message.content}")
                 print(f"===DEBUG: Message author: {message.author}")
                 if self.db.is_user_in_table(message.author):
+                    has_user_been_added = False
                     if self.db.is_code_sent(message.author):
                         if self.db.get_code(message.author) == self.clean_message(message.content):
                             await message.author.send("You look like a student. Welcome aboard.")
                             self.accept_user()
-                    if not self.db.update_mail(message.author, message.content):  # TODO: FIX: this check comes again after entering the code.
+                            has_user_been_added = True
+                    if  not has_user_been_added and not self.db.update_mail(message.author, message.content):
                         await message.author.send("Your e-mail looks incorrect. Try again.")
-                    else:
+                    elif not has_user_been_added:
                         code = self.generate_code()
                         self.db.update_code(message.author, code)
                         await message.author.send("I've sent you a code. Enter it.")
