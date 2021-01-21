@@ -28,19 +28,28 @@ class Database:
 
     def add_new_member(self, member: discord.User.id):
         """Add a new member to the database using the discord ID as user_id
-        and leave mail and code empty for now."""
-        # TODO: we should return boolean to show if adding was successful.
-        try:
+        and leave mail and code empty for now, and check if user was already in table.
+
+        :return: String which represents a three possible states."""
+        res = "None"
+        if self.is_user_in_table(member):
+            print(f"===DEBUG: {member} is already in the DB!")
+            if self.is_code_sent(member):
+                print(f"===DEBUG: {member} already received a code!")
+                res = "User already in table, code received."
+            else:
+                res = "User already in table."
+        else:
             self.cursor.execute(f"""
                 INSERT INTO members(user_id, is_code_sent)
                 VALUES ('{member}', 0)
             """)
-        except sqlite3.IntegrityError:
-            print(f"===DEBUG: {member} is already in the DB!")
-        self.db.commit()
+            self.db.commit()
+            res = "User added to table."
         print(f"===DEBUG: {member}")
         self.cursor.execute("""SELECT * FROM members""")
         print(f"===DEBUG: {self.cursor.fetchone()}")
+        return res
 
     def update_mail(self, user, mail):
         """Update user's mail."""
@@ -69,7 +78,8 @@ class Database:
         """)
         mail = self.cursor.fetchone()[0]
         print(f"===DEBUG: mail for {user} from DB is {mail}")
-        self.send_code_to_mail(mail, code)
+        if self.send_code_to_mail(mail, code):
+            self.code_was_sent(user)
         self.db.commit()
 
     def is_user_in_table(self, user):
@@ -98,23 +108,31 @@ class Database:
         self.cursor.execute(f"""
                 SELECT is_code_sent FROM members WHERE user_id = '{user}'
             """)
-        return self.cursor.fetchone()[0]
+        res = self.cursor.fetchone()[0]
+        print(f"===DEBUG: Is code sent? Answer: {res}")
+        return res
 
     def send_code_to_mail(self, usermail, code):
         """Send an e-mail with the code."""
         body = f"""Hey!
         Here is your discord server's code:
-        
+
             {code}
-            
+
         Tell it to the Studentship Checker bot."""
         # Only gmail account can be used. Need to provide user (example -> something@gmail.com) and APP password.
-        yag = yagmail.SMTP(user="", password="")
-        yag.send(
-            to=usermail,
-            subject="Studentship Checker code",
-            contents=body,
-        )
+        try:
+            yag = yagmail.SMTP(user="", password="")
+            yag.send(
+                to=usermail,
+                subject="Studentship Checker code",
+                contents=body,
+            )
+            return True
+        except yagmail.error.YagAddressError or yagmail.error.YagConnectionClosed\
+                or yagmail.error.YagInvalidEmailAddress:
+            print(f"===DEBUG: Occurs error in yagmail. Code was not sent.")
+        return False
 
     def get_code(self, user):
         """Return generated user's code from the table."""
