@@ -18,3 +18,6 @@ Also we may add:
 
 - Mass role updating (eg from one to another). This can be useful, when students have roles indicating their grade/course, so when they go to the next one, the corresponding bot command can be issued to update all members with a role, let's say "the first course" to "the second course"
 - TODO
+
+## If you want to contribute
+In order to make the bot work, you'll need to add to ./main directory a file named tkn, where on the first line there should be your discord developer key and on the third line google app password (for gmail), on the fourth your gmail account name.

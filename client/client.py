@@ -4,6 +4,7 @@ import discord
 
 from client.talk import Talk
 from db.database import Database
+from db.user import User
 
 
 class BotClient(discord.Client):
@@ -19,6 +20,7 @@ class BotClient(discord.Client):
 
     async def on_member_join(self, member):
         print(f"===DEBUG: {member} has joined the server!")
+        user = User(member)  # TODO: make user connected to db, not client.
         await member.send("Hey! Enter your school e-mail. I'll send you a confirmation code.")
         # TODO: switch with sending a message, so we could specify the message to send for already existing users.
         self.db.add_new_user(member)

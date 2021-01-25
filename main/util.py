@@ -15,6 +15,6 @@ class Util:
 
     def get_mail(self):
         """Get sending mail data from a local file content."""
-        pwd = self.get_data()[2].split("=")[1]
-        addr = self.get_data()[3].split("=")[1]
+        pwd = self.get_data()[2]
+        addr = self.get_data()[3]
         return addr, pwd
