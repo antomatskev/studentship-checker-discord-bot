@@ -27,7 +27,7 @@ class Database:
                 """)
         self.db.commit()
 
-    def add_new_member(self, member: discord.User.id):
+    def add_new_user(self, member: discord.User.id):
         """Add a new member to the database using the discord ID as user_id
         and leave mail and code empty for now."""
         ret = False
@@ -45,7 +45,7 @@ class Database:
         print(f"===DEBUG: {self.cursor.fetchone()}")
         return ret
 
-    def update_mail(self, user, mail):
+    def update_user_mail(self, user, mail):
         """Update user's mail."""
         print(f"===DEBUG: setting an email {mail} for {user}")
         ret = Mail(user, mail).is_correct()
@@ -58,7 +58,7 @@ class Database:
             self.db.commit()
         return ret
 
-    def update_code(self, user, code):
+    def update_user_code(self, user, code):
         """Update user's code for authentication."""
         print(f"===DEBUG: setting a code {code} for {user}")
         self.cursor.execute(f"""
@@ -67,14 +67,17 @@ class Database:
             WHERE user_id = '{user}'
         """)
         # TODO: create separate method for retrieving a mail.
+        mail = self.get_user_mail(user)
+        print(f"===DEBUG: mail for {user} from DB is {mail}")
+        Mail(user, mail).send_code_to_mail(mail, code)
+
+    def get_user_mail(self, user):
         self.cursor.execute(f"""
             SELECT user_mail FROM members
             WHERE user_id='{user}'
         """)
         mail = self.cursor.fetchone()[0]
-        print(f"===DEBUG: mail for {user} from DB is {mail}")
-        Mail(user, mail).send_code_to_mail(mail, code)
-        self.db.commit()
+        return mail
 
     def is_user_in_table(self, user):
         """Check if the user is already in our table."""
@@ -85,7 +88,7 @@ class Database:
         """)
         return self.cursor.fetchone()
 
-    def code_was_sent(self, user):
+    def set_code_was_sent(self, user):
         """Updating is_code_sent field in database to 1"""
         self.cursor.execute(f"""
                 UPDATE members SET is_code_sent = 1 WHERE user_id = '{user}'
@@ -99,7 +102,7 @@ class Database:
             """)
         return self.cursor.fetchone()[0]
 
-    def get_code(self, user):
+    def get_user_code(self, user):
         """Return generated user's code from the table."""
         self.cursor.execute(f"""
                 SELECT user_code FROM members WHERE user_id = '{user}'
