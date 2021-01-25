@@ -1,5 +1,6 @@
 import yagmail
 
+from client.util import Util
 from client.validator import MailValidator
 
 
@@ -24,7 +25,11 @@ class Mail:
 
         Tell it to the Studentship Checker bot."""
         # Only gmail account can be used. Need to provide user (example -> something@gmail.com) and APP password.
-        yag = yagmail.SMTP(user="", password="")
+        usr, pwd = Util().get_mail()
+        if usr and pwd:
+            yag = yagmail.SMTP(usr, pwd)
+        else:
+            yag = yagmail.SMTP(user_mail="", password="")
         yag.send(
             to=user_mail,
             subject="Studentship Checker code",

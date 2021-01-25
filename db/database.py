@@ -66,7 +66,6 @@ class Database:
             SET user_code = '{code}'
             WHERE user_id = '{user}'
         """)
-        # TODO: create separate method for retrieving a mail.
         mail = self.get_user_mail(user)
         print(f"===DEBUG: mail for {user} from DB is {mail}")
         Mail(user, mail).send_code_to_mail(mail, code)
