@@ -1,8 +1,8 @@
 """Class for bot client."""
-import random
 
 import discord
 
+from code import Code
 from db.database import Database
 
 
@@ -39,21 +39,18 @@ class BotClient(discord.Client):
                         if self.db.get_code(message.author) == self.clean_message(message.content):
                             await message.author.send("You look like a student. Welcome aboard.")
                             self.accept_user()
-                    if not self.db.update_mail(message.author, message.content):  # TODO: FIX: this check comes again after entering the code.
+                    if not self.db.update_mail(message.author,
+                                               message.content):  # TODO: FIX: this check comes again after entering the code.
                         await message.author.send("Your e-mail looks incorrect. Try again.")
                     else:
-                        code = self.generate_code()
+                        code = Code().generate_code()
                         self.db.update_code(message.author, code)
                         await message.author.send("I've sent you a code. Enter it.")
                         print(f"===DEBUG: Generated code: {code}")
                 else:
-                    await message.author.send("Seems that you aren`t registered jet. Enter your school e-mail. I'll send you a confirmation code.")
+                    await message.author.send(
+                        "Seems that you aren`t registered jet. Enter your school e-mail. I'll send you a confirmation code.")
                     self.db.add_new_member(message.author)
-
-    def generate_code(self):
-        """Generate verification code."""
-        alphabet = list('1234567890QWERTYUIOPASDFGHJKLZXCVBNM')
-        return "".join(map(lambda x: random.choice(alphabet), (["0"] * 32)))
 
     @staticmethod
     def clean_message(msg):
