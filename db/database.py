@@ -16,13 +16,15 @@ class Database:
 
     def init_table(self):
         """Create table if necessary."""
+        # TODO: check if is_user_on_server is needed at all.
         self.cursor.execute("""
                     CREATE TABLE IF NOT EXISTS members(
                     user_id TEXT PRIMARY KEY UNIQUE,
                     user_mail TEXT UNIQUE,
                     user_code TEXT UNIQUE,
                     is_user_on_server INTEGER,
-                    is_code_sent INTEGER
+                    is_code_sent INTEGER,
+                    is_user_confirmed INTEGER
                     )
                 """)
         self.db.commit()
@@ -94,10 +96,24 @@ class Database:
             """)
         self.db.commit()
 
+    def set_user_confirmed(self, user):
+        """Updating is_user_confirmed field in database to 1"""
+        self.cursor.execute(f"""
+                UPDATE members SET is_user_confirmed = 1 WHERE user_id = '{user}'
+            """)
+        self.db.commit()
+
     def is_code_sent(self, user):
         """Make sure the code is sent to user. And change the corresponding value in the table."""
         self.cursor.execute(f"""
                 SELECT is_code_sent FROM members WHERE user_id = '{user}'
+            """)
+        return self.cursor.fetchone()[0]
+
+    def is_user_confirmed(self, user):
+        """Make sure the user is confirmed."""
+        self.cursor.execute(f"""
+                SELECT is_user_confirmed FROM members WHERE user_id = '{user}'
             """)
         return self.cursor.fetchone()[0]
 

@@ -2,7 +2,7 @@
 import logging
 import discord
 from client.client import BotClient
-from client.util import Util
+from configurations_util import ConfigurationsUtil
 
 # Set up logging
 logger = logging.getLogger('discord')
@@ -13,4 +13,4 @@ logger.addHandler(handler)
 
 intents = discord.Intents(messages=True, guilds=True, reactions=True, members=True, presences=True)
 client = BotClient(command_prefix=".", intents=intents)
-client.run(Util().get_token())
+client.run(ConfigurationsUtil().get_token())

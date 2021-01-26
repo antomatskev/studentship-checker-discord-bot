@@ -1,4 +1,4 @@
-class Util:
+class ConfigurationsUtil:
 
     def get_data(self):
         """Get data from local file."""

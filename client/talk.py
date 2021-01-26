@@ -1,7 +1,7 @@
 import discord
 
-from client.code import Code
 from client.mail import Mail
+from db.code import Code
 
 
 class Talk:
@@ -17,6 +17,7 @@ class Talk:
             print(f"===DEBUG: Message object: {message}")
             print(f"===DEBUG: Message content: {message.content}")
             print(f"===DEBUG: Message author: {user}")
+            # TODO: make the conversation to work with user's state.
             if self._db.is_user_in_table(user):
                 if self._db.is_code_sent(user):
                     if self._db.get_user_code(user) == self.clean_message(message.content):
