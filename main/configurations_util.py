@@ -15,6 +15,7 @@ class ConfigurationsUtil:
 
     def get_mail(self):
         """Get sending mail data from a local file content."""
-        pwd = self.get_data()[2]
-        addr = self.get_data()[3]
+        file_data = self.get_data()
+        pwd = file_data[2]
+        addr = file_data[3]
         return addr, pwd

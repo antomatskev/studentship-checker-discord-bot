@@ -1,4 +1,4 @@
-import enum
+from db.user_state import UserState
 
 
 class User:
@@ -28,6 +28,15 @@ class User:
                         ret = UserState.CONFIRMED
         return ret
 
+    def name(self):
+        return self._name
+
+    def state(self):
+        return self._state
+
+    def state(self, new_state):
+        self._state = new_state
+
     def is_name_in_db(self):
         return self._state == UserState.NAME_IN_DB
 
@@ -42,13 +51,3 @@ class User:
 
     def is_confirmed(self):
         return self._state == UserState.CONFIRMED
-
-
-class UserState(enum.Enum):
-    """User's state in authentication process."""
-    NEWBIE = 0
-    NAME_IN_DB = 1
-    MAIL_IN_DB = 2
-    CODE_GENERATED = 3
-    CODE_SENT = 4
-    CONFIRMED = 5

@@ -1,7 +1,7 @@
 import yagmail
 
 from main.configurations_util import ConfigurationsUtil
-from client.validator import MailValidator
+from bot.validator import MailValidator
 
 
 class Mail:

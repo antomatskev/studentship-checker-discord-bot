@@ -2,7 +2,7 @@ import sqlite3
 
 import discord
 
-from client.mail import Mail
+from bot.mail import Mail
 
 
 class Database:
